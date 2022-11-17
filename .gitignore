@@ -1,3 +1,4 @@
+rootfiles/*
 *.root
 *~
 *.pyc
