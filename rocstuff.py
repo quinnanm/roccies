@@ -2,62 +2,18 @@ import numpy as np
 import matplotlib
 import argparse
 import matplotlib.pyplot as plt
-import ROOT as r
-from ROOT import gStyle
-gStyle.SetOptStat(0)
-r.gROOT.SetBatch(True)
-import utils as ut
+
 import pandas as pd
-from root_numpy import root2array, array2root, fill_hist, array2tree
-#import uproot
+import uproot
+import matplotlib.colors as mcolors
+import hist as hist
+plt.rcParams.update({'font.size': 20})
+from sels import *
 
 class rocstuff:
     def __init__(self):
         #general settings
-        # self.indir = indir
-        self.nbins = 100
-        self.xmin = 0.0
-        self.xmax = 1.0
         self.treename = 'Events'
-
-    #define signal and background selections and labels
-    # def getsels():
-
-    def gethist(self, infiles=[], var='', cutstr=''):
-        # inputs rootfiles and outputs combined hists
-        #infiles is list of string rootfile names. multiple files will be combined
-        #var is the discriminating variable, ie the score
-        #cutstr is selection you are applying
-        hists=[]
-        for f in infiles:
-            hist = r.TH1F("hist", "hist", self.nbins, self.xmin, self.xmax)
-            rf,t = ut.makeroot(filename, self.treename)
-            t.Draw(var+">>hist",cutstr)
-            hist.Sumw2() #for errors
-            ut.fixref(rf, hist)
-            hists.append(hist)
-        #if more than one histogram, add them together
-        hist = hists[0]
-        if len(hists)>1:
-            for i,h in enumerate(hists):
-                if i==0:
-                    continue
-                hist=ut.addhists(hist,h)
-        return hist
-
-    def getarr(self, infile='', cutstr='', branches=[]):
-        #returns array of given var with selection applied
-        #will switch to uproot but for now just use root numpy
-        #branches = [list of only branches you want to keep, optional]
-        # events = uproot.open(self.ifile)[self.treename].arrays(branches, cutstr)
-        print 'file',infile
-        print 'cutstr',cutstr
-        events = pd.DataFrame(root2array(infile, self.treename, selection=cutstr))
-        if branches:
-                #keep only specified branches
-            events = events[branches]
-                
-        return events
 
     #outputs truth and prediction arrays for roc_curve inputs
     def preproc(self, var, siglabelarr, bkglabelarr, sigarr, bkgarr):
@@ -79,7 +35,7 @@ class rocstuff:
             for i in range(1,len(siglabelarr)):
                 siglabel += siglabelarr[i]+'==1 &'
         siglabel = siglabel
-        print siglabel
+        print(siglabel)
 
         #complaining about masks
         sigscores = sigarr[var]#.to_numpy()
@@ -87,8 +43,8 @@ class rocstuff:
         
         sigmask = sigarr[siglabel]==1
         bkgmask = bkgarr[bkglabel]==1
-        print 'siglabel',siglabel
-        print len(sigscores), len(sigmask)
+        print('siglabel '+siglabel)
+        print(len(sigscores)+' '+len(sigmask))
         # sigscores = sigarr[var][sigmask].to_numpy()
         # bkgscores = bkgarr[var][bkgmask].to_numpy()
         sigscores = sigscores[sigmask]#.to_numpy()

@@ -1,4 +1,5 @@
 rootfiles/*
+plots/*
 *.root
 *~
 *.pyc

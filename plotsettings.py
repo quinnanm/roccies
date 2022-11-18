@@ -3,13 +3,9 @@ import matplotlib
 from sklearn.metrics import roc_curve, auc
 import argparse
 import matplotlib.pyplot as plt
-import ROOT as r
-from ROOT import gStyle
-gStyle.SetOptStat(0)
-r.gROOT.SetBatch(True)
 import matplotlib.pyplot as plt
-# import mplhep as hep
-# plt.style.use(hep.style.CMS)
+import mplhep as hep
+plt.style.use(hep.style.CMS)
 
 
 class plotsettings:
