@@ -154,6 +154,12 @@ ucsd['isosel']=' && lep_iso<0.3'
 ucsd['minisel']=' && lep_miniiso<0.2'
 ucsd['bothsel']=' && lep_iso<0.3 && lep_miniiso<0.2'
 
+def getsels(group='ucsd'):
+    if group=='ucsd':
+        return ucsd
+    elif group=='pku':
+        return pku
+
 ############### plot scores ( logscale hists)
 
 

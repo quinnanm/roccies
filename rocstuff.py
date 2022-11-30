@@ -15,6 +15,16 @@ class rocstuff:
         #general settings
         self.treename = 'Events'
 
+    def getlabel(self, labelarr):
+        label = labelarr[0]+'==1'
+        if len(labelarr)>1:
+            for i in range(1,len(labelarr-1)):
+                label += labelarr[i]+'==1 &'
+
+        label += labelarr[i]+'==1' #last one
+        print(label)
+        return label
+        
     #outputs truth and prediction arrays for roc_curve inputs
     def preproc(self, var, siglabelarr, bkglabelarr, sigarr, bkgarr):
        # """
@@ -30,12 +40,8 @@ class rocstuff:
         
         #may need to add functionality for combining multiple such arrays
         # PROBLEM AREA
-        siglabel = siglabelarr[0]+'==1'
-        if len(siglabelarr)>1:
-            for i in range(1,len(siglabelarr)):
-                siglabel += siglabelarr[i]+'==1 &'
-        siglabel = siglabel
-        print(siglabel)
+        siglabel=self.getlabel(siglabelarr)
+        bkglabel=self.getlabel(bkglabelarr)
 
         #complaining about masks
         sigscores = sigarr[var]#.to_numpy()
