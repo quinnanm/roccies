@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib
 import argparse
 import matplotlib.pyplot as plt
+from sklearn.metrics import roc_curve, auc
 
 import pandas as pd
 import uproot
@@ -14,16 +15,6 @@ class rocstuff:
     def __init__(self):
         #general settings
         self.treename = 'Events'
-
- #   def getlabel(self, labelarr):
- #       label = labelarr[0]+'==1'
- #       if len(labelarr)>1:
- #           for i in range(1,len(labelarr-1)):
- #               label += labelarr[i]+'==1 &'
-
- #       label += labelarr[i]+'==1' #last one
- #       print(label)
- #       return label
         
        # takes truth scores, outputs tpr and fpr 
     def rocrates(self, sigscores, bkgscores):
@@ -36,71 +27,79 @@ class rocstuff:
         #sigscores - events coming from signal, label applied
         #bkgscores - events coming from background, label applied
                 
-        #sigmask = sigarr[siglabel]==1
-        #bkgmask = bkgarr[bkglabel]==1
-        #print('siglabel '+siglabel)
-        #print(len(sigscores)+' '+len(sigmask))
-        # sigscores = sigarr[var][sigmask].to_numpy()             
-        # bkgscores = bkgarr[var][bkgmask].to_numpy()
-        #sigscores = sigscores[sigmask]#.to_numpy()
-        #bkgscores = bkgscores[bkgmask]#.to_numpy()
         predict = np.concatenate((sigscores, bkgscores), axis=None)
 
         siglabels = np.ones(sigscores.shape)
-        bkglabels = np.zeros(bkgscores.shape)
+        bkglabels = np.zeros(bkgscores.shape)       
         truth = np.concatenate((siglabels, bkglabels), axis=None)
+        
+        print('predict'+str(predict))
+        print('truth'+str(truth))
  
-        #fpr, tpr, threshold = roc_curve(truth, predict)
-        return fpr, tpr
-
-    # takes files, labels and disc value and outputs tpr and fprs for plotting. puts it all together
-#    def roccy(self, var, sigfile, bkgfile, siglabel, bkglabel, cutstr=''):
-        # var is disc score
-        #sig/bkgfile is signal/background file
-        #siglabel is label that makes signal true
-        #bkglabel is label that makes bkg true
-        #cutstr is any additional selections
-        
-#        sigarr = self.getarr(sigfile, cutstr)
-#        bkgarr = self.getarr(bkgfile, cutstr)
-        
-#        truth,pred = self.preproc(var, siglabel, bkglabel, sigarr, bkgarr)
-#        fpr,tpr = self.getroc(truth, pred)
-        
- #       return fpr, tpr
+        fpr, tpr, threshold = roc_curve(truth, predict)
     
+        return fpr, tpr
+ 
+
+    #just divides numerator and denominator to construct score from masked array
+    def constructscore(self, array, numlist, denlist):
+        #ex: pku['Hmu_score'] = "(score_label_H_WqqWmv_0c + score_label_H_WqqWmv_1c)/"+SUMscore_pku
+
+        print('constructing score')       
+        #constructs needed score given list and array
+        def sumscore(scorelist, array):
+            #print(str(scorelist))
+            outscore = np.zeros(len(array[scorelist[0]]))
+        
+            for sc in scorelist:
+                outscore = np.add(outscore, array[sc])
+    
+            outscore = (outscore)
+
+            return outscore
+
+        num = sumscore(numlist, array)        
+        if len(numlist)<2:
+            num = num.astype(float)
+            print('SCORE DEFINED AS: '+str(numlist))
+            return (num) #score is just the numerator score if there is only one score in list
+        
+        den = sumscore(denlist, array)
+        score = np.divide((num), (den)) #else you have to divide by total scores       
+        score = score.astype(float)
+        print('SCORE DEFINED AS: SUM('+str(numlist)+') / SUM('+str(denlist)+')')
+        
+        return score
+        
     #takes array and label selection and returns masked array of 1s and 0s according to whether label is true or not
-    def labelmask(self, labels, array, branches=[]):
+    def labelmask(self, label, array, branches=[]):
         #labels is labels you want to apply ["label1", "label2"]
         #array is array you are masking (converted from rootfile)
         #branches are variable/score you want to return
         
         if len(branches)<1:  
-            branches = array.keys() #probably doesnt work
-             
-        #BEST WAY TO APPLY MULTIPLE LABELS?
-        #nesting? look up later for lab in labels
-        #mask=zeros(array) #NEED TO GET LENGTH TO INITIALIZE
-         
-        #change later -  for lab in labels?
-        #or use uproot again and reconvert
-        #or you have to apply mask with selection to the events, pre-array step. make "getevents" function or something
-        #question: how to apply mask with condition involving multiple columns on an array?
-        mask = array[labels]==1
-        print("MASKING!!!!!!!!!!!!!!!!!!")
-        print(mask)
-        array = array[mask]
-        print(array)
+            branches = array.keys()
             
-        maskarr = array[branches].to_numpy()
-        print(maskarr)
-    
-        #maskarr = array.arrays(branches, labelsel) #code to mask that array #NEED TO DO
+        #label is list of labels to apply. need to construct appropriately
+        mask = array[label[0]]==1 #first element
+        
+        for i,lab in enumerate(label[1:]):
+            mask = (mask) | (array[lab]==1)          
+            print('mask '+str(mask))           
+            
+        array = array[mask]
+        print("MASKING WITH LABEL: "+str(label)+str(mask))           
+        maskarr = array[branches]#.to_numpy()
+       
+        #Make it array of just scores so numpy likes it
+        print(maskarr.dtype.names)
+        print("NEW ARRAY: "+str(maskarr))
+        
         return maskarr
     
     
     # takes files, labels and disc value and outputs tpr and fprs for plotting. puts it all together
-    def roccy(self, barr, sarr, labels, blabels=['ttbar', 'wjets'], slabels=['Hmu', 'Hel'], plotvars=[], info=None):
+    def roccy(self, sarr, barr, labels, slabels=['Hmu', 'Hel'], blabels=['T', 'W'], plotvars=[], info=None):
         #barr is np array for signal
         #sarr is np array for background
         #slabel is label that makes signal true. should be array
@@ -115,29 +114,34 @@ class rocstuff:
         
         #construct label selection properly
         #default if plotvars is not specified is to use the signal scores        
-        bkgarrs = ones_like(blabels)#initialize arrays
-        sigarrs = ones_like(slabels)
-        scores = np.ones_like(slabels)
-        out = {}
-               
+        #bkgarrs = [None] * len(blabels) #initialize lists
+        #sigarrs = [None] * len(slabels)
+        #scores = [None] * len(slabels)
+ 
+        out = {}        
+        allscores = labels['SUM_score']
+        
         for i,s in enumerate(slabels):
             slab = labels[s+'_label']
-            print('signal label to mask array '+slab)
+            print('signal label to mask array '+str(slab))
            
             if len(plotvars)<1: # no set variable to plot, use defaults for variables/scores to plot
                 print("no set variable to plot, using defaults according to signal labels")
                 svar = labels[s+'_score']
-                print('score to plot '+svar)
-                scores[i] = svar
+                
+                print('score to plot '+str(svar))
+                #scores[i] = svar
                  
-                sscore = self.labelmask(slab, sarr, [svar]) #array of scores that pass the label            
-                sigarrs[i] = sscore
+                sscorearr = self.labelmask(slab, sarr, allscores) #array of scores that pass the label                    
+                sscore = self.constructscore(sscorearr, svar, allscores) #then construct the score as sum if needed
+                #sigarrs[i] = sscore
                 
                 for j,b in enumerate(blabels):
                     blab = labels[b+'_label']
-                    print('background label to mask array '+blab)
-                    bscore = labelmask(blab, barr, [svar]) #array of scores that pass the label       
-                    bkgarrs[i] = bscore
+                    print('background label to mask array '+str(blab))
+                    bscorearr = self.labelmask(blab, barr, allscores) #array of scores that pass the label
+                    bscore = self.constructscore(bscorearr, svar, allscores) #then construct the score as sum if needed
+                    #bkgarrs[i] = bscore
                     
                     fpr, tpr = self.rocrates(sscore, bscore)
                     key = s+'_v_'+b

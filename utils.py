@@ -11,10 +11,10 @@ def getarr(infile='', cutstr='', branches=[], info={}, treename='Events'):
     print('file '+infile)
     print('cutstr '+cutstr)
     evts = uproot.open(infile)[treename]
-    print(evts)
+    #print(evts)
     if len(branches)<1:  
         branches = evts.keys()
-    print(branches)
+    #print(branches)
     events = evts.arrays(branches, cutstr)
     nocut  = evts.arrays(branches)
 
@@ -23,7 +23,7 @@ def getarr(infile='', cutstr='', branches=[], info={}, treename='Events'):
     info['cutstr']= cutstr
     
     #print(events)      
-    return events, info
+    return events.to_numpy(), info
 
 
 #def getyield(hist, verbose=False):

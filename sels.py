@@ -61,23 +61,44 @@ ucsd = {}
 ##########################################################
 #pku
 
-Hlabel_pku= ["label_H_WqqWqq_0c","label_H_WqqWqq_1c","label_H_WqqWqq_2c","label_H_WqqWq_0c","label_H_WqqWq_1c","label_H_WqqWq_2c","label_H_WqqWev_0c","label_H_WqqWev_1c","label_H_WqqWmv_0c","label_H_WqqWmv_1c","label_H_WqqWtauev_0c","label_H_WqqWtauev_1c","label_H_WqqWtaumv_0c","label_H_WqqWtaumv_1c","label_H_WqqWtauhv_0c","label_H_WqqWtauhv_1c"]
+#Hlabel_pku= ["label_H_WqqWqq_0c","label_H_WqqWqq_1c","label_H_WqqWqq_2c","label_H_WqqWq_0c","label_H_WqqWq_1c","label_H_WqqWq_2c","label_H_WqqWev_0c","label_H_WqqWev_1c","label_H_WqqWmv_0c","label_H_WqqWmv_1c","label_H_WqqWtauev_0c","label_H_WqqWtauev_1c","label_H_WqqWtaumv_0c","label_H_WqqWtaumv_1c","label_H_WqqWtauhv_0c","label_H_WqqWtauhv_1c"]
 
-SUMscore_pku = "( score_label_H_WqqWqq_0c + score_label_H_WqqWqq_1c + score_label_H_WqqWqq_2c + score_label_H_WqqWq_0c + score_label_H_WqqWq_1c + score_label_H_WqqWq_2c + score_label_H_WqqWev_0c + score_label_H_WqqWev_1c + score_label_H_WqqWmv_0c + score_label_H_WqqWmv_1c + score_label_H_WqqWtauev_0c + score_label_H_WqqWtauev_1c + score_label_H_WqqWtaumv_0c + score_label_H_WqqWtaumv_1c + score_label_H_WqqWtauhv_0c + score_label_H_WqqWtauhv_1c + score_label_QCD_bb + score_label_QCD_cc + score_label_QCD_b + score_label_QCD_c + score_label_QCD_others + score_label_Top_bWqq_0c + score_label_Top_bWqq_1c + score_label_Top_bWq_0c + score_label_Top_bWq_1c + score_label_Top_bWev + score_label_Top_bWmv + score_label_Top_bWtauhv + score_label_Top_bWtauev + score_label_Top_bWtaumv + score_label_Wqq_jets_1c + score_label_Wqq_jets_0c )"
 
-HSUM_pku = "(score_label_H_WqqWqq_0c + score_label_H_WqqWqq_1c + score_label_H_WqqWqq_2c + score_label_H_WqqWq_0c + score_label_H_WqqWq_1c + score_label_H_WqqWq_2c + score_label_H_WqqWev_0c + score_label_H_WqqWev_1c + score_label_H_WqqWmv_0c + score_label_H_WqqWmv_1c + score_label_H_WqqWtauev_0c + score_label_H_WqqWtauev_1c + score_label_H_WqqWtaumv_0c + score_label_H_WqqWtaumv_1c + score_label_H_WqqWtauhv_0c + score_label_H_WqqWtauhv_1c)"
+def SUMscore(group, array):
+    #group is ucsd or pku, array is array you want to do addition for
+    
+    scoredict = {'uscd':["score_fj_ttbar_label", "score_fj_wjets_label", "score_fj_isHVV_elenuqq", "score_fj_isHVV_munuqq", "score_fj_H_VV_leptauelvqq", "score_fj_H_VV_leptaumuvqq", "score_fj_H_VV_hadtauvqq"],
+                 'pku':["score_label_H_WqqWqq_0c", "score_label_H_WqqWqq_1c", "score_label_H_WqqWqq_2c", "score_label_H_WqqWq_0c", "score_label_H_WqqWq_1c", "score_label_H_WqqWq_2c", "score_label_H_WqqWev_0c", "score_label_H_WqqWev_1c", "score_label_H_WqqWmv_0c", "score_label_H_WqqWmv_1c", "score_label_H_WqqWtauev_0c", "score_label_H_WqqWtauev_1c", "score_label_H_WqqWtaumv_0c", "score_label_H_WqqWtaumv_1c", "score_label_H_WqqWtauhv_0c", "score_label_H_WqqWtauhv_1c", "score_label_QCD_bb", "score_label_QCD_cc", "score_label_QCD_b", "score_label_QCD_c", "score_label_QCD_others", "score_label_Top_bWqq_0c", "score_label_Top_bWqq_1c", "score_label_Top_bWq_0c", "score_label_Top_bWq_1c", "score_label_Top_bWev", "score_label_Top_bWmv", "score_label_Top_bWtauhv", "score_label_Top_bWtauev", "score_label_Top_bWtaumv", "score_label_Wqq_jets_1c", "score_label_Wqq_jets_0c"]}
+    
+    scorelist = scoredict[group]
+    sumscore = np.zeros(len(array[scorelist[0]]))
+    
+    for sc in scorelist:
+        sumscore = np.add(sumscore, array[sc])
 
-Hscore_pku = HSUM_pku+'/'+SUMscore_pku
+    sumscore = (sumscore)
+    
+    return sumscore
+    
+    
+    
+#SUMscore_pku = "( score_label_H_WqqWqq_0c + score_label_H_WqqWqq_1c + score_label_H_WqqWqq_2c + score_label_H_WqqWq_0c + score_label_H_WqqWq_1c + score_label_H_WqqWq_2c + score_label_H_WqqWev_0c + score_label_H_WqqWev_1c + score_label_H_WqqWmv_0c + score_label_H_WqqWmv_1c + score_label_H_WqqWtauev_0c + score_label_H_WqqWtauev_1c + score_label_H_WqqWtaumv_0c + score_label_H_WqqWtaumv_1c + score_label_H_WqqWtauhv_0c + score_label_H_WqqWtauhv_1c + score_label_QCD_bb + score_label_QCD_cc + score_label_QCD_b + score_label_QCD_c + score_label_QCD_others + score_label_Top_bWqq_0c + score_label_Top_bWqq_1c + score_label_Top_bWq_0c + score_label_Top_bWq_1c + score_label_Top_bWev + score_label_Top_bWmv + score_label_Top_bWtauhv + score_label_Top_bWtauev + score_label_Top_bWtaumv + score_label_Wqq_jets_1c + score_label_Wqq_jets_0c )"
 
-pku['Hmu_score'] = "(score_label_H_WqqWmv_0c + score_label_H_WqqWmv_1c)/"+SUMscore_pku
-pku['Hel_score'] = "(score_label_H_WqqWev_0c + score_label_H_WqqWev_1c)/"+SUMscore_pku
-pku['Hlep_score'] = "(score_label_H_WqqWev_0c + score_label_H_WqqWev_1c + score_label_H_WqqWmv_0c + score_label_H_WqqWmv_1c)/"+SUMscore_pku
-pku['Htau_score'] = "(score_label_H_WqqWtauev_0c + score_label_H_WqqWtauev_1c + score_label_H_WqqWtaumv_0c + score_label_H_WqqWtaumv_1c + score_label_H_WqqWtauhv_0c + score_label_H_WqqWtauhv_1c)/"+SUMscore_pku
+#HSUM_pku = "(score_label_H_WqqWqq_0c + score_label_H_WqqWqq_1c + score_label_H_WqqWqq_2c + score_label_H_WqqWq_0c + score_label_H_WqqWq_1c + score_label_H_WqqWq_2c + score_label_H_WqqWev_0c + score_label_H_WqqWev_1c + score_label_H_WqqWmv_0c + score_label_H_WqqWmv_1c + score_label_H_WqqWtauev_0c + score_label_H_WqqWtauev_1c + score_label_H_WqqWtaumv_0c + score_label_H_WqqWtaumv_1c + score_label_H_WqqWtauhv_0c + score_label_H_WqqWtauhv_1c)"
 
-pku['Hmu_label'] = "label_H_WqqWmv_0c==1 && label_H_WqqWmv_1c==1"
-pku['Hel_label'] = "label_H_WqqWev_0c==1 && label_H_WqqWev_1c==1"
-pku['Hlep_label'] = "label_H_WqqWev_0c==1 && label_H_WqqWev_1c==1 && label_H_WqqWmv_0c==1 && label_H_WqqWmv_1c==1"
-pku['Htau_label'] = "label_H_WqqWtauev_0c==1 && label_H_WqqWtauev_1c==1 && label_H_WqqWtaumv_0c==1 && label_H_WqqWtaumv_1c==1 && label_H_WqqWtauhv_0c==1 && label_H_WqqWtauhv_1c==1"
+#Hscore_pku = HSUM_pku+'/'+SUMscore_pku
+
+pku['SUM_score'] = ["score_label_H_WqqWqq_0c", "score_label_H_WqqWqq_1c", "score_label_H_WqqWqq_2c", "score_label_H_WqqWq_0c", "score_label_H_WqqWq_1c", "score_label_H_WqqWq_2c", "score_label_H_WqqWev_0c", "score_label_H_WqqWev_1c", "score_label_H_WqqWmv_0c", "score_label_H_WqqWmv_1c", "score_label_H_WqqWtauev_0c", "score_label_H_WqqWtauev_1c", "score_label_H_WqqWtaumv_0c", "score_label_H_WqqWtaumv_1c", "score_label_H_WqqWtauhv_0c", "score_label_H_WqqWtauhv_1c", "score_label_QCD_bb", "score_label_QCD_cc", "score_label_QCD_b", "score_label_QCD_c", "score_label_QCD_others", "score_label_Top_bWqq_0c", "score_label_Top_bWqq_1c", "score_label_Top_bWq_0c", "score_label_Top_bWq_1c", "score_label_Top_bWev", "score_label_Top_bWmv", "score_label_Top_bWtauhv", "score_label_Top_bWtauev", "score_label_Top_bWtaumv", "score_label_Wqq_jets_1c", "score_label_Wqq_jets_0c"]
+
+pku['Hmu_score'] = ["score_label_H_WqqWmv_0c", "score_label_H_WqqWmv_1c"]
+pku['Hel_score'] = ["score_label_H_WqqWev_0c", "score_label_H_WqqWev_1c"]
+pku['Hlep_score'] = ["score_label_H_WqqWev_0c", "score_label_H_WqqWev_1c", "score_label_H_WqqWmv_0c", "score_label_H_WqqWmv_1c"]
+pku['Htau_score'] = ["score_label_H_WqqWtauev_0c", "score_label_H_WqqWtauev_1c", "score_label_H_WqqWtaumv_0c", "score_label_H_WqqWtaumv_1c", "score_label_H_WqqWtauhv_0c", "score_label_H_WqqWtauhv_1c"]
+
+pku['Hmu_label'] = ["label_H_WqqWmv_0c", "label_H_WqqWmv_1c"]
+pku['Hel_label'] = ["label_H_WqqWev_0c", "label_H_WqqWev_1c"]
+pku['Hlep_label'] = ["label_H_WqqWev_0c", "label_H_WqqWev_1c", "label_H_WqqWmv_0c", "label_H_WqqWmv_1c"]
+pku['Htau_label'] = ["label_H_WqqWtauev_0c", "label_H_WqqWtauev_1c", "label_H_WqqWtaumv_0c", "label_H_WqqWtaumv_1c", "label_H_WqqWtauhv_0c", "label_H_WqqWtauhv_1c"]
 
 #specific taus
 # Htaumu_score_pku = "(score_label_H_WqqWtaumv_0c + score_label_H_WqqWtaumv_1c)"
@@ -85,49 +106,52 @@ pku['Htau_label'] = "label_H_WqqWtauev_0c==1 && label_H_WqqWtauev_1c==1 && label
 # Htauhad_score_pku = "(score_label_H_WqqWtauhv_0c + score_label_H_WqqWtauhv_1c)"
 
 #PKU BACKGROUNDS#########################
-pku['QCD_score'] = "(score_label_QCD_bb + score_label_QCD_cc + score_label_QCD_b + score_label_QCD_c + score_label_QCD_others)/"+SUMscore_pku 
-pku['W_score'] = "(score_label_Wqq_jets_1c + score_label_Wqq_jets_0c)/"+SUMscore_pku 
-pku['T_score'] = "(score_label_Top_bWqq_0c + score_label_Top_bWqq_1c + score_label_Top_bWq_0c + score_label_Top_bWq_1c + score_label_Top_bWev + score_label_Top_bWmv + score_label_Top_bWtauhv + score_label_Top_bWtauev + score_label_Top_bWtaumv)/"+SUMscore_pku 
-pku['lepT_score'] = "(score_label_Top_bWev + score_label_Top_bWmv)/"+SUMscore_pku 
-pku['lepW_score'] = "(score_label_Wqq_jets_1c + score_label_Wqq_jets_0c)/"+SUMscore_pku  ##?? #just W with sel
+pku['QCD_score'] = ["score_label_QCD_bb", "score_label_QCD_cc", "score_label_QCD_b", "score_label_QCD_c", "score_label_QCD_others"]
+pku['W_score'] = ["score_label_Wqq_jets_1c", "score_label_Wqq_jets_0c"]
+pku['T_score'] = ["score_label_Top_bWqq_0c", "score_label_Top_bWqq_1c", "score_label_Top_bWq_0c", "score_label_Top_bWq_1c", "score_label_Top_bWev", "score_label_Top_bWmv", "score_label_Top_bWtauhv", "score_label_Top_bWtauev", "score_label_Top_bWtaumv"]
+pku['lepT_score'] = ["score_label_Top_bWev", "score_label_Top_bWmv"]
+pku['lepW_score'] = ["score_label_Wqq_jets_1c", "score_label_Wqq_jets_0c"]##?? #just W with sel
 
-pku['QCD_label'] = "label_QCD_bb==1 && label_QCD_cc==1 && label_QCD_b==1 && label_QCD_c==1 && label_QCD_others==1"
-pku['W_label']   = "label_Wqq_jets_1c==1 && label_Wqq_jets_0c==1"
-pku['T_label']   = "label_Top_bWqq_0c==1 && label_Top_bWqq_1c==1 && label_Top_bWq_0c==1 && label_Top_bWq_1c==1 && label_Top_bWev==1 && label_Top_bWmv==1 && label_Top_bWtauhv==1 && label_Top_bWtauev==1 && label_Top_bWtaumv" 
-pku['lepT_label'] = "label_Top_bWev==1 && label_Top_bWmv==1" 
-pku['lepW_label'] = "fj_wjets_label==1"  #??
+pku['QCD_label'] = ["label_QCD_bb", "label_QCD_cc", "label_QCD_blabel_QCD_c", "label_QCD_others"]
+pku['W_label']   = ["label_Wqq_jets_1c", "label_Wqq_jets_0c"]
+pku['T_label']   = ["label_Top_bWqq_0c", "label_Top_bWqq_1c", "label_Top_bWq_0c", "label_Top_bWq_1c", "label_Top_bWev", "label_Top_bWmv", "label_Top_bWtauhv", "label_Top_bWtauev", "label_Top_bWtaumv"] 
+pku['lepT_label'] = ["fj_ttbar_label"] 
+pku['lepW_label'] = ["fj_wjets_label"]  #??
 
 ##########################################################
 ##########################################################
 # ucsd
 # fj_ttbar_label, fj_wjets_label, fj_isHVV_elenuqq, fj_isHVV_munuqq, fj_H_VV_leptauelvqq, fj_H_VV_leptaumuvqq, fj_H_VV_hadtauvqq
 
-SUMscore_ucsd = "(score_fj_ttbar_label + score_fj_wjets_label + score_fj_isHVV_elenuqq + score_fj_isHVV_munuqq + score_fj_H_VV_leptauelvqq + score_fj_H_VV_leptaumuvqq + score_fj_H_VV_hadtauvqq)"
-Hscore_ucsd  = "(score_fj_isHVV_elenuqq + score_fj_isHVV_munuqq + score_fj_H_VV_leptauelvqq + score_fj_H_VV_leptaumuvqq + score_fj_H_VV_hadtauvqq)/"+SUMscore_ucsd
-Hlabel_ucsd = ["fj_isHVV_elenuqq","fj_isHVV_munuqq","fj_H_VV_leptauelvqq","fj_H_VV_leptaumuvqq","fj_H_VV_hadtauvqq"]
+#SUMscore_ucsd = "(score_fj_ttbar_label + score_fj_wjets_label + score_fj_isHVV_elenuqq + score_fj_isHVV_munuqq + score_fj_H_VV_leptauelvqq + score_fj_H_VV_leptaumuvqq + score_fj_H_VV_hadtauvqq)"
+#Hscore_ucsd  = "(score_fj_isHVV_elenuqq + score_fj_isHVV_munuqq + score_fj_H_VV_leptauelvqq + score_fj_H_VV_leptaumuvqq + score_fj_H_VV_hadtauvqq)/"+SUMscore_ucsd
 
-ucsd['Hmu_score'] = "score_fj_isHVV_munuqq"
-ucsd['Hel_score'] = "score_fj_isHVV_elenuqq"
-ucsd['Hlep_score'] = "(score_fj_isHVV_munuqq + s`core_fj_isHVV_elenuqq)/"+SUMscore_ucsd
-ucsd['Htau_score'] = "(score_fj_H_VV_leptauelvqq + score_fj_H_VV_leptaumuvqq + score_fj_H_VV_hadtauvqq)/"+SUMscore_ucsd
+#Hlabel_ucsd = ["fj_isHVV_elenuqq","fj_isHVV_munuqq","fj_H_VV_leptauelvqq","fj_H_VV_leptaumuvqq","fj_H_VV_hadtauvqq"]
+
+ucsd['SUM_score'] = ["score_fj_ttbar_label", "score_fj_wjets_label", "score_fj_isHVV_elenuqq", "score_fj_isHVV_munuqq", "score_fj_H_VV_leptauelvqq", "score_fj_H_VV_leptaumuvqq", "score_fj_H_VV_hadtauvqq"]
+
+ucsd['Hmu_score']  = ["score_fj_isHVV_munuqq"]
+ucsd['Hel_score']  = ["score_fj_isHVV_elenuqq"]
+ucsd['Hlep_score'] = ["score_fj_isHVV_munuqq", "score_fj_isHVV_elenuqq"]
+ucsd['Htau_score'] = ["score_fj_H_VV_leptauelvqq", "score_fj_H_VV_leptaumuvqq", "score_fj_H_VV_hadtauvqq"]
 
 ucsd['Hmu_label']  = ["fj_isHVV_munuqq"]
 ucsd['Hel_label']  = ["fj_isHVV_elenuqq"]
-ucsd['Hlep_label'] = ["fj_isHVV_munuqq || fj_isHVV_elenuqq"]
-ucsd['Htau_label'] = ["fj_H_VV_leptauelvqq || fj_H_VV_leptaumuvqq || fj_H_VV_hadtauvqq"]
+ucsd['Hlep_label'] = ["fj_isHVV_munuqq", "fj_isHVV_elenuqq"]
+ucsd['Htau_label'] = ["fj_H_VV_leptauelvqq", "fj_H_VV_leptaumuvqq", "fj_H_VV_hadtauvqq"]
 
 #bkgs ucsd
-ucsd['QCD_score'] = "(1.0 - (score_fj_isHVV_elenuqq + score_fj_isHVV_munuqq + score_fj_H_VV_leptauelvqq + score_fj_H_VV_leptaumuvqq + score_fj_H_VV_hadtauvqq))/"+SUMscore_ucsd #?? #NOT signal basically
-ucsd['W_score'] = "score_fj_wjets_label"
-ucsd['T_score'] = "score_fj_ttbar_label"
-ucsd['lepT_score'] = "(score_fj_wjets_label)"  #?? #just W with sel
-ucsd['lepW_score'] = "(score_fj_ttbar_label)" #?? #just T with sel
+#ucsd['QCD_score'] = "(1.0 - (score_fj_isHVV_elenuqq + score_fj_isHVV_munuqq + score_fj_H_VV_leptauelvqq + score_fj_H_VV_leptaumuvqq + score_fj_H_VV_hadtauvqq))/"+SUMscore_ucsd #?? #NOT signal basically
+ucsd['W_score'] = ["score_fj_wjets_label"]
+ucsd['T_score'] = ["score_fj_ttbar_label"]
+ucsd['lepT_score'] = ["score_fj_wjets_label"]  #?? #just W with sel
+ucsd['lepW_score'] = ["score_fj_ttbar_label"] #?? #just T with sel
 
-ucsd['QCD_label'] = "fj_QCD_label==1"
-ucsd['W_label']   = "fj_wjets_label==1"
-ucsd['T_label']   = "fj_ttbar_label==1"
-ucsd['lepT_label']= "fj_ttbar_label==1"
-ucsd['lepW_label']= "fj_wjets_label==1"
+ucsd['QCD_label'] = ["fj_QCD_label"]
+ucsd['W_label']   = ["fj_wjets_label"]
+ucsd['T_label']   = ["fj_ttbar_label"]
+ucsd['lepT_label']= ["fj_ttbar_label"]
+ucsd['lepW_label']= ["fj_wjets_label"]
 
 
 ############# special selections
