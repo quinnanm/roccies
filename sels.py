@@ -30,6 +30,7 @@ files = {'bulkg':{'ucsd':'./rootfiles/ucsd/bulkg-3.root',
 
 #selection same as training/inference presel
 basesel = "((fj_pt>200) & (fj_pt<2500) & (fj_msoftdrop>=20) & (fj_msoftdrop<260) & (abs(fj_eta)<2.4))"
+
     # (fj_pt<2500) &
     # (np.absolute(fj_eta)<2.4) &
     # (fj_msoftdrop>=20) &
@@ -113,10 +114,14 @@ pku['lepT_score'] = ["score_label_Top_bWev", "score_label_Top_bWmv"]
 pku['lepW_score'] = ["score_label_Wqq_jets_1c", "score_label_Wqq_jets_0c"]##?? #just W with sel
 
 pku['QCD_label'] = ["label_QCD_bb", "label_QCD_cc", "label_QCD_blabel_QCD_c", "label_QCD_others"]
-pku['W_label']   = ["label_Wqq_jets_1c", "label_Wqq_jets_0c"]
-pku['T_label']   = ["label_Top_bWqq_0c", "label_Top_bWqq_1c", "label_Top_bWq_0c", "label_Top_bWq_1c", "label_Top_bWev", "label_Top_bWmv", "label_Top_bWtauhv", "label_Top_bWtauev", "label_Top_bWtaumv"] 
+#pku['W_label']   = ["label_Wqq_jets_1c", "label_Wqq_jets_0c"]
+#pku['T_label']   = ["label_Top_bWqq_0c", "label_Top_bWqq_1c", "label_Top_bWq_0c", "label_Top_bWq_1c", "label_Top_bWev", "label_Top_bWmv", "label_Top_bWtauhv", "label_Top_bWtauev", "label_Top_bWtaumv"] 
 pku['lepT_label'] = ["fj_ttbar_label"] 
 pku['lepW_label'] = ["fj_wjets_label"]  #??
+
+#temp for troubleshooting
+pku['W_label']   = ["fj_wjets_label"]
+pku['T_label']   = ["fj_ttbar_label"]
 
 ##########################################################
 ##########################################################
@@ -141,7 +146,7 @@ ucsd['Hlep_label'] = ["fj_isHVV_munuqq", "fj_isHVV_elenuqq"]
 ucsd['Htau_label'] = ["fj_H_VV_leptauelvqq", "fj_H_VV_leptaumuvqq", "fj_H_VV_hadtauvqq"]
 
 #bkgs ucsd
-#ucsd['QCD_score'] = "(1.0 - (score_fj_isHVV_elenuqq + score_fj_isHVV_munuqq + score_fj_H_VV_leptauelvqq + score_fj_H_VV_leptaumuvqq + score_fj_H_VV_hadtauvqq))/"+SUMscore_ucsd #?? #NOT signal basically
+#ucsd['QCD_score'] = ["score_fj_wjets_label", "score_fj_ttbar_label"]
 ucsd['W_score'] = ["score_fj_wjets_label"]
 ucsd['T_score'] = ["score_fj_ttbar_label"]
 ucsd['lepT_score'] = ["score_fj_wjets_label"]  #?? #just W with sel

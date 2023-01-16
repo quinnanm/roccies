@@ -53,7 +53,6 @@ class rocstuff:
         
             for sc in scorelist:
                 outscore = np.add(outscore, array[sc])
-    
             outscore = (outscore)
 
             return outscore
@@ -119,7 +118,8 @@ class rocstuff:
         #scores = [None] * len(slabels)
  
         out = {}        
-        allscores = labels['SUM_score']
+        #allscores = labels['SUM_score'] #deniminator needs to be sig+background for that roc curve in particular
+        scorebranches = labels['SUM_score']
         
         for i,s in enumerate(slabels):
             slab = labels[s+'_label']
@@ -131,16 +131,22 @@ class rocstuff:
                 
                 print('score to plot '+str(svar))
                 #scores[i] = svar
-                 
-                sscorearr = self.labelmask(slab, sarr, allscores) #array of scores that pass the label                    
-                sscore = self.constructscore(sscorearr, svar, allscores) #then construct the score as sum if needed
-                #sigarrs[i] = sscore
-                
+                                 
                 for j,b in enumerate(blabels):
                     blab = labels[b+'_label']
                     print('background label to mask array '+str(blab))
-                    bscorearr = self.labelmask(blab, barr, allscores) #array of scores that pass the label
-                    bscore = self.constructscore(bscorearr, svar, allscores) #then construct the score as sum if needed
+                    
+                    #denominator score is signal+background scores
+                    bvar = labels[b+'_score']
+                    denvars = svar+bvar
+                    print('DENVAR'+str(denvars)+'\n')
+                    
+                    sscorearr = self.labelmask(slab, sarr, scorebranches) #array of scores that pass the label      
+                    sscore = self.constructscore(sscorearr, svar, denvars) #then construct the score as sum if needed
+                    #sigarrs[i] = sscore
+                    
+                    bscorearr = self.labelmask(blab, barr, scorebranches) #array of scores that pass the label
+                    bscore = self.constructscore(bscorearr, svar, denvars) #then construct the score as sum if needed
                     #bkgarrs[i] = bscore
                     
                     fpr, tpr = self.rocrates(sscore, bscore)
